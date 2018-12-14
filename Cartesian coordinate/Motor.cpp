@@ -127,13 +127,11 @@ void MotorClass::turn(int setAngle) {
         if (lcount < (numOfImpulses / 2) && rcount < (numOfImpulses / 2)) {
             if (tempPWM < pwmMAX)
                 tempPWM++;
-            delay(10);
         }
         // Speed-down.
         else {
             if (tempPWM > 0)
                 tempPWM--;
-            delay(10);
         }
     }
     setPwm(0, 0);
