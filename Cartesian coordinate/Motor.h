@@ -69,8 +69,6 @@ class MotorClass {
     // Set 0 counters of encoders.
     void cleanEnc();
 
-    uint16_t curAngle = 0;
-
 public:
     // pinMode()'s, attachInterrupt()'s and set all to 0 inside.
     void init();
@@ -104,8 +102,6 @@ public:
 
     // Turn to input degree.
     void turn(int setAngle);
-
-    int getCurAngle();
 
     // Move forward by len(cm).
     void forward(uint32_t len);

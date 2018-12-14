@@ -109,7 +109,7 @@ void MotorClass::turn(int setAngle) {
         setAngle -= 2 * 180;
     while (setAngle < -180)
         setAngle += 2 * 180;
-    //curAngle = setAngle;
+    
     // Number of impulses to rotation.
     uint32_t numOfImpulses = (con::LENof1Deg * abs(setAngle)) / con::LENof1Pulse;
     // Turn right.
@@ -130,7 +130,7 @@ void MotorClass::turn(int setAngle) {
         }
         // Speed-down.
         else {
-            if (tempPWM > 0)
+            if (tempPWM > pwmMIN);
                 tempPWM--;
         }
     }
@@ -140,35 +140,38 @@ void MotorClass::turn(int setAngle) {
     cleanEnc();
 }
 
-int MotorClass::getCurAngle() {
-    return curAngle;
-}
-
 void MotorClass::forwardmm(uint32_t len) {
     uint32_t length = len / con::LENof1Pulse;
     setDir(1, 1);
     setPwm(0, 0);
     cleanEnc();
 
-    //uint8_t ltempPWM = pwmMIN;
-    //uint8_t rtempPWM = pwmMIN;
+    uint8_t ltempPWM = pwmMIN;
+    uint8_t rtempPWM = pwmMIN;
     while (lcount < length && rcount < length) {
-
+        
+        // Если левое колесо отстаёт.
         if (lcount < rcount) {
-            setPwm(pwmMAX, pwmMAX - 100);
-            //Serial.println("To left.");
+            if (rtempPWM > pwmMIN)
+                rtempPWM -= 60;
+            if (ltempPWM < pwmMAX)
+                ltempPWM += 10;
         }
+        // Если правое колесо отстаёт.
         else if (lcount > rcount) {
-            setPwm(pwmMAX - 100, pwmMAX);
-            //Serial.println("To right.");
+            if (rtempPWM < pwmMAX)
+                rtempPWM += 10;
+            if (ltempPWM > pwmMIN)
+                ltempPWM -= 10;
         }
-        setPwm(pwmMAX, pwmMAX);
-        /*
-        Serial.print("Encoders: L");
-        Serial.print(lcount);
-        Serial.print("; R");
-        Serial.print(rcount);
-        */
+        // Если едет прямо.
+        else {
+            //if (rtempPWM < pwmMAX)
+               // rtempPWM += 10;
+            //if (ltempPWM < pwmMAX)
+              //  ltempPWM += 10;
+        }
+        setPwm(ltempPWM, rtempPWM);
     }
     setDir(0, 0);
     delay(5);
@@ -179,81 +182,6 @@ void MotorClass::forward(uint32_t len) {
     forwardmm(len * 10);
 }
 
-/*
-void MotorClass::forward(uint32_t len) {
-    uint32_t length = len / con::LENof1Pulse;
-    setDir(1, 1);
-    setPwm(0, 0);
-    cleanEnc();
-    pwmLeft = pwmMIN;
-    pwmRight = pwmMIN;
-    Serial.print("Imp");
-    Serial.println(length);
-    while (lcount < length && rcount < length) {
-        Serial.print("pwmLeft");
-        Serial.print(pwmLeft);
-        Serial.print("; EncLeft");
-        Serial.print(lcount);
-        Serial.print("; pwmRight");
-        Serial.print(pwmRight);
-        Serial.print("; EncRight");
-        Serial.println(rcount);
-        setPwm(pwmLeft, pwmRight);
-        //Speed-up.
-        if (lcount < length / 2 && rcount < length / 2) {
-            if(pwmLeft < pwmMAX)
-                pwmLeft++;
-            if (pwmRight < pwmMAX)
-                pwmRight++;
-
-            // Левый ушёл дальше правого?
-            if (lcount - rcount >= 5) {
-                if (pwmLeft < pwmMIN)
-                    pwmLeft = pwmMIN;
-                else
-                    pwmLeft--;
-                delay(5);
-            }
-            // Правый ушёл дальше левого?
-            else if (rcount - lcount >= 5) {
-                if (pwmRight < pwmMIN)
-                    pwmRight = pwmMIN;
-                else
-                    pwmRight--;
-                delay(5);
-            }
-
-        }
-        // Speed-down.
-        else if (lcount < length / 6 && rcount < length / 6) {
-            if(pwmLeft > 0)
-                pwmLeft--;
-            if(pwmRight > 0)
-                pwmRight--;
-            // Левый ушёл дальше правого?
-            if (lcount - rcount >= 5) {
-                if (pwmLeft < pwmMIN)
-                    pwmLeft = pwmMIN;
-                else
-                    pwmLeft--;
-                delay(5);
-            }
-            // Правый ушёл дальше левого?
-            else if (rcount - lcount >= 5) {
-                if (pwmRight < pwmMIN)
-                    pwmRight = pwmMIN;
-                else
-                    pwmRight--;
-                delay(5);
-            }
-        }
-    }
-    setDir(0, 0);
-    delay(5);
-    setPwm(0, 0);
-    setDir(1, 1);
-}
-*/
 
 void MotorClass::setDirLeft(boolean dir) {
     if (dir) {

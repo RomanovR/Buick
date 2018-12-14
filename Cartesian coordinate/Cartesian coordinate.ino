@@ -1,6 +1,6 @@
-
 #include "PointXY.h"
 #include "Motor.h"
+
 
 /*
 Cartesian.ino
@@ -42,7 +42,7 @@ void setup() {
     Serial.begin(9600);
     Move.init();
     Move.setPwmMin(55);
-    Move.setPwmMax(255);
+    Move.setPwmMax(205);
     hPoint.writeEEPROM(0);
     Serial.println("Setup complete.");
     Serial.println("Press 'h' to help;");
@@ -66,7 +66,8 @@ void loop() {
         Serial.println("  a - left(cm){x-5;y};");
         Serial.println("  s - down(cm)+{x;y-5};");
         Serial.println("  d - right(cm){x+5;y};");
-        Serial.println("  q - go {0;0};");
+        Serial.println("  e - set current point as home point;");
+        Serial.println("  q - go home {0;0};");
         break;
         case 'f':
         cPoint.readEEPROM(0);
@@ -93,7 +94,7 @@ void loop() {
             Serial.println("Gap 1cm;");
         break;
         case '+':
-        if (gap < 11) {
+        if (gap < 10) {
             gap++;
             Serial.print("New gap ");
             Serial.print(gap);
@@ -141,6 +142,13 @@ void loop() {
         Move.forward(getGap(cPoint, tPoint));
         report(cPoint, tPoint);
         cPoint = tPoint;
+        break;
+        case 'e':
+        cPoint.setXY(0, 0);
+        tPoint = cPoint;
+        cAngle = 0;
+        Serial.println("Set current point as home point.");
+        break;
         default:
         break;
     }
