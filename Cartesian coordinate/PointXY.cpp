@@ -87,21 +87,6 @@ int getTheta(PointXYClass & from, PointXYClass & to) {
         return asin(abs(dY) / sqrt(pow(dX, 2) + pow(dY, 2))) * 180 / PI + 90 * 3;
 }
 
-/*
-int getTheta(PointXYClass & from, PointXYClass & to) {
-    int dX = to._x - from._x;
-    int dY = to._y - from._y;
-
-    if (dX >= 0 && dY >= 0)
-        return atan2((dY), (dX)) * 180 / PI;
-    if (dX >= 0 && dY <= 0)
-        return atan2((dY), (dX)) * 180 / PI + 90;
-    if (dX <= 0 && dY <= 0)
-        return atan2((dY), (dX)) * 180 / PI + 90 * 2;
-    else
-        return atan2((dY), (dX)) * 180 / PI + 90 * 3;
-}
-*/
 unsigned int getGap(PointXYClass & from, PointXYClass & to) {
     int dX = to._x - from._x;
     int dY = to._y - from._y;
