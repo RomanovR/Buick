@@ -29,8 +29,11 @@
     <ClInclude Include="PointXY.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="__vm\.Cartesian coordinate.vsarduino.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Cartesian.ino" />
+    <None Include="Cartesian coordinate.ino" />
   </ItemGroup>
 </Project>
