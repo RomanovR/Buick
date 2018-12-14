@@ -27,27 +27,26 @@ namespace {
     //Head servo PWM pin
     constexpr auto SERVO = 11;
     MotorClass Move;
-    PointXYClass home(0, 0);
-    PointXYClass current = home;
-    PointXYClass next = home;
+    PointXYClass hPoint(0, 0);
+    PointXYClass cPoint = hPoint;
+    PointXYClass tPoint = hPoint;
 
-    int prevAngle = 0;
-    int nextAngle = 0;
-    int len = 0;
+    int cAngle = 0;
     auto gap = 5;
     byte incByte = 0;
 }
 
-void report(const PointXYClass &current, const PointXYClass &next, int nextAngle, int len);
+void report(const PointXYClass &cPoint, const PointXYClass &tPoint, int nextAngle, int len);
 
 void setup() {
     Serial.begin(9600);
     Move.init();
-    Move.setPwmMin(0);
+    Move.setPwmMin(55);
     Move.setPwmMax(255);
-    home.writeEEPROM(0);
+    hPoint.writeEEPROM(0);
     Serial.println("Setup complete.");
     Serial.println("Press 'h' to help;");
+    
 }
 
 void loop() {
@@ -61,34 +60,23 @@ void loop() {
     switch (incByte) {
         case 'h':
         Serial.println("Manual mode:");
-        Serial.println("  f - load old current point;");
-        Serial.println("  r - save current point;");
+        Serial.println("  f - load old cPoint point;");
+        Serial.println("  r - save cPoint point;");
         Serial.println("  g - set gap(1-10cm);");
         Serial.println("  w - move forward(cm){x;y+5};");
         Serial.println("  a - turn left(cm){x-5;y};");
         Serial.println("  s - move backward(cm)+{x;y-5};");
         Serial.println("  d - turn right(cm){x+5;y};");
-        Serial.println("  q - go home(cm){x0;y0};");
-        break;
-        case '1':
-        current.addXY(5, 5);
-        next.addXY(-5, -5);
-        nextAngle = getTheta(current, next) - prevAngle;
-        len = getGap(current, next);
-        report(current, next, nextAngle, len);
-        Move.turn(nextAngle);
-        prevAngle = nextAngle;
-        Move.forward(len);
-        current = next;
+        Serial.println("  q - go hPoint(cm){x0;y0};");
         break;
         case 'f':
-        current.readEEPROM(0);
+        cPoint.readEEPROM(0);
         Serial.print("Current point updated from EEPROM.");
-        current.print();
+        cPoint.print();
         break;
         case 'r':
-        current.writeEEPROM(0);
-        Serial.print("Successfully saved current point.");
+        cPoint.writeEEPROM(0);
+        Serial.print("Successfully saved cPoint point.");
         break;
         case 'g':
         Serial.print("Edit gap ");
@@ -116,66 +104,39 @@ void loop() {
             Serial.println("Gap 10cm;");
         break;
         case 'w':
-        next = current;
-        next.addXY(0, gap);
-        nextAngle = getTheta(current, next) - prevAngle;
-        len = getGap(current, next);
-        report(current, next, nextAngle, len);
-        Move.turn(nextAngle);
-        prevAngle = nextAngle;
-        Move.forward(len);
-        current = next;
+        tPoint.addXY(0, gap);
+        Move.turn(getTheta(cPoint, tPoint) - cAngle);
+        cAngle = getTheta(cPoint, tPoint);
+        Move.forward(getGap(cPoint, tPoint));
+        cPoint = tPoint;
         break;
         case 'a':
-        next = current;
-        next.addXY(-gap, 0);
-        nextAngle = getTheta(current, next) - prevAngle;
-        len = getGap(current, next);
-
-        report(current, next, nextAngle, len);
-
-        Move.turn(nextAngle);
-        prevAngle = nextAngle;
-        Move.forward(len);
-        current = next;
+        tPoint.addXY(-gap, 0);
+        Move.turn(getTheta(cPoint, tPoint) - cAngle);
+        cAngle = getTheta(cPoint, tPoint);
+        Move.forward(getGap(cPoint, tPoint));
+        cPoint = tPoint;
         break;
         case 's':
-        next = current;
-        next.addXY(0, -gap);
-        nextAngle = getTheta(current, next) - prevAngle;
-        len = getGap(current, next);
-
-        report(current, next, nextAngle, len);
-
-        Move.turn(nextAngle);
-        prevAngle = nextAngle;
-        Move.forward(len);
-        current = next;
+        tPoint.addXY(0, -gap);
+        Move.turn(getTheta(cPoint, tPoint) - cAngle);
+        cAngle = getTheta(cPoint, tPoint);
+        Move.forward(getGap(cPoint, tPoint));
+        cPoint = tPoint;
         break;
         case 'd':
-        next = current;
-        next.addXY(gap, 0);
-        nextAngle = getTheta(current, next) - prevAngle;
-        len = getGap(current, next);
-
-        report(current, next, nextAngle, len);
-
-        Move.turn(nextAngle);
-        prevAngle = nextAngle;
-        Move.forward(len);
-        current = next;
+        tPoint.addXY(gap, 0);
+        Move.turn(getTheta(cPoint, tPoint) - cAngle);
+        cAngle = getTheta(cPoint, tPoint);
+        Move.forward(getGap(cPoint, tPoint));
+        cPoint = tPoint;
         break;
         case 'q':
-        next = home;
-        nextAngle = getTheta(current, next) - prevAngle;
-        len = getGap(current, next);
-
-        report(current, next, nextAngle, len);
-
-        Move.turn(nextAngle);
-        prevAngle = nextAngle;
-        Move.forward(len);
-        current = home;
+        tPoint = hPoint;
+        Move.turn(getTheta(cPoint, tPoint) - cAngle);
+        cAngle = getTheta(cPoint, tPoint);
+        Move.forward(getGap(cPoint, tPoint));
+        cPoint = tPoint;
         default:
         break;
     }
@@ -183,12 +144,12 @@ void loop() {
 }
 
 // Вывод отчёта.
-void report(const PointXYClass &current, const PointXYClass &next, int nextAngle, int len) {
+void report(const PointXYClass &cPoint, const PointXYClass &tPoint, int nextAngle, int len) {
     Serial.print("Current point ");
-    current.print();
+    cPoint.print();
     Serial.println(";");
     Serial.print("Next point ");
-    next.print();
+    tPoint.print();
     Serial.println(";");
     Serial.print("Theta: ");
     Serial.print(nextAngle);

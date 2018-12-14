@@ -26,8 +26,10 @@ class PointXYClass
     void writeEEPROM(unsigned int firstAdr);
     void readEEPROM(unsigned int firstAdr);
     void addXY(int x, int y);
+    void setXY(int x, int y);
+
     friend int getTheta(PointXYClass & from, PointXYClass & to);
-    friend uint32_t getGap(PointXYClass & from, PointXYClass & to);
+    friend unsigned int getGap(PointXYClass & from, PointXYClass & to);
 };
 
 

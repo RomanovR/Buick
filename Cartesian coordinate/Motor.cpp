@@ -136,10 +136,9 @@ void MotorClass::turn(int setAngle) {
             delay(10);
         }
     }
-    setDir(0, 0);
-    delay(5);
     setPwm(0, 0);
     setDir(1, 1);
+    delay(5);
     cleanEnc();
 }
 

@@ -9,7 +9,7 @@ PointXYClass::PointXYClass(int x, int y) {
 }
 
 PointXYClass & PointXYClass::operator=(const PointXYClass & orig) {
-    if (this == &orig);
+    if (this == &orig)
         return *this;
         
     setX(orig._x);
@@ -64,6 +64,11 @@ void PointXYClass::addXY(int x, int y) {
     _y += y;
 }
 
+void PointXYClass::setXY(int x, int y) {
+    _x = x;
+    _y = y;
+}
+
 PointXYClass operator+(const PointXYClass & first, const PointXYClass & second) {
     return PointXYClass(first._x + second._x, first._y + second._y);
 }
@@ -75,11 +80,11 @@ int getTheta(PointXYClass & from, PointXYClass & to) {
     if (dX >= 0 && dY >= 0)
         return asin(abs(dX) / sqrt(pow(dX, 2) + pow(dY, 2))) * 180 / PI;
     if (dX >= 0 && dY <= 0)
-        return asin(abs(dX) / sqrt(pow(dX, 2) + pow(dY, 2))) * 180 / PI + 90;
+        return asin(abs(dY) / sqrt(pow(dX, 2) + pow(dY, 2))) * 180 / PI + 90;
     if (dX <= 0 && dY <= 0)
         return asin(abs(dX) / sqrt(pow(dX, 2) + pow(dY, 2))) * 180 / PI + 90 * 2;
     else
-        return asin(abs(dX) / sqrt(pow(dX, 2) + pow(dY, 2))) * 180 / PI + 90 * 3;
+        return asin(abs(dY) / sqrt(pow(dX, 2) + pow(dY, 2))) * 180 / PI + 90 * 3;
 }
 
 /*
@@ -97,9 +102,9 @@ int getTheta(PointXYClass & from, PointXYClass & to) {
         return atan2((dY), (dX)) * 180 / PI + 90 * 3;
 }
 */
-uint32_t getGap(PointXYClass & from, PointXYClass & to) {
+unsigned int getGap(PointXYClass & from, PointXYClass & to) {
     int dX = to._x - from._x;
     int dY = to._y - from._y;
-    return (uint32_t)sqrt(pow(dX, 2) + pow(dY, 2));
+    return (unsigned int)sqrt(pow(dX, 2) + pow(dY, 2));
 }
 
