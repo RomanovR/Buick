@@ -18,8 +18,8 @@
     <ClInclude Include="pch.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="..\Cartesian coordinate\PointXY.h">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="PointXY.h">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -29,7 +29,7 @@
     <ClCompile Include="testTheta.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="..\Cartesian coordinate\PointXY.cpp">
+    <ClCompile Include="PointXY.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
